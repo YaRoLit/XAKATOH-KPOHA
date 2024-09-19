@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Button List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        function setThemeClass() {
+            document.documentElement.className = Telegram.WebApp.colorScheme;
+        }
+
+        Telegram.WebApp.onEvent('themeChanged', setThemeClass);
+        setThemeClass();
+
+    </script>
+    <script>
+        function sendRequest(key) {
+            fetch(`/button-click/${key}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ key: key })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function showSection(section) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(sec => sec.style.display = 'none');
+            document.getElementById(section).style.display = 'block';
+        }
+
+        function searchItems() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const items = {{ items | tojson }};
+            const resultsContainer = document.getElementById('search-results');
+            resultsContainer.innerHTML = '';
+
+            for (const [key, value] of Object.entries(items)) {
+                if (key.toLowerCase().includes(query) || value.toLowerCase().includes(query)) {
+                    const button = document.createElement('button');
+                    button.textContent = `${key}: ${value}`;
+                    button.onclick = () => sendRequest(key);
+                    resultsContainer.appendChild(button);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.scroll-container');
+            container.addEventListener('scroll', () => {
+                const buttons = container.querySelectorAll('button');
+                buttons.forEach(button => {
+                    const rect = button.getBoundingClientRect();
+                    const containerRect = container.getBoundingClientRect();
+                    if (rect.top < containerRect.top || rect.bottom > containerRect.bottom) {
+                        button.style.opacity = '0';
+                    } else {
+                        button.style.opacity = '1';
+                    }
+                });
+            });
+
+            const searchContainer = document.querySelector('.search-results');
+            searchContainer.addEventListener('scroll', () => {
+                const buttons = searchContainer.querySelectorAll('button');
+                buttons.forEach(button => {
+                    const rect = button.getBoundingClientRect();
+                    const containerRect = searchContainer.getBoundingClientRect();
+                    if (rect.top < containerRect.top || rect.bottom > containerRect.bottom) {
+                        button.style.opacity = '0';
+                    } else {
+                        button.style.opacity = '1';
+                    }
+                });
+            });
+
+            // Show the default section
+            showSection('profile');
+        });
+    </script>
+</head>
+<body>
+
+    <div class="section" id="profile">
+        <h2>Добро пожаловать, {{ username }}!</h2>
+        <p>Содержимое профиля...</p>
+    </div>
+    <div class="section" id="leaders" style="display: none;">
+        <p>Содержимое лидеров...</p>
+    </div>
+    <div class="section" id="search" style="display: none;">
+        <input type="text" id="search-input" oninput="searchItems()" placeholder="Поиск..." />
+        <div id="search-results" class="search-results"></div>
+    </div>
+    <div class="section" id="trade" style="display: none;">
+        <div class="scroll-container">
+            {% for key, value in items.items() %}
+                <button onclick="sendRequest('{{ key }}')">{{ key }}: {{ value }}</button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button onclick="showSection('profile')">👤</button>
+        <button onclick="showSection('leaders')">🏆</button>
+        <button onclick="showSection('search')">🔍</button>
+        <button onclick="showSection('trade')">💼</button>
+    </div>
+</body>
+</html>

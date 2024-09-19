@@ -53,13 +53,13 @@ def tag_select(call):
 def main_menu(call):
     try:
         markup = types.InlineKeyboardMarkup(row_width=2)
-        market = types.InlineKeyboardButton("🚀 Создать", callback_data="select_crypto")
-        wallet = types.InlineKeyboardButton("👛 Календарь", callback_data="wallet")
+        market = types.InlineKeyboardButton("🚀 Создать", callback_data="create_event")
+        wallet = types.InlineKeyboardButton("📅 Календарь", callback_data="calendar")
         markup.add(market, wallet)
     except Exception as e:
         print(e)
     try:
-        main = tgbot.send_message(call.message.chat.id, f"Главное меню", reply_markup=markup)
+        tgbot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"Главное меню", reply_markup=markup)
     except:
         main = tgbot.send_message(call.chat.id, f"Главное меню", reply_markup=markup)
 
@@ -78,6 +78,9 @@ def callback_query(call):
             username = call.from_user.username
             users[username].tags.remove(call.data.split(" ")[1])
             tag_select(call)
+        
+        elif call.data.split(" ", 1)[0] == "to_main_menu":
+            main_menu(call)
 
         else:
             tgbot.answer_callback_query(callback_query_id=call.id, text="Для авторизации напишите /start", show_alert=True)

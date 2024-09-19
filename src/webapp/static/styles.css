@@ -1,0 +1,93 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #4f4842; /* Темный фон */
+    color: #f0f0f0; /* Светлый текст */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    text-align: center; /* Центрирование текста */
+}
+h1 {
+    color: #f0f0f0; /* Светлый текст */
+}
+.scroll-container, .search-results {
+    width: 405px;
+    height: 400px;
+    overflow-y: scroll;
+    border: none; /* Безрамочная форма */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Центрирование содержимого */
+    background-color: #3e3a36; /* Темный фон контейнера */
+    border-radius: 10px; /* Закругленные углы */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Тень */
+}
+.scroll-container::-webkit-scrollbar, .search-results::-webkit-scrollbar {
+    display: none; /* Скрыть полосу прокрутки */
+}
+.scroll-container button, .search-results button {
+    width: 80%; /* Уменьшение ширины кнопок для центрирования */
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px; /* Круглые кнопки */
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: opacity 0.5s ease, transform 0.1s ease; /* Плавное исчезновение и анимация нажатия */
+    outline: none; /* Убрать синее выделение */
+}
+.scroll-container button:hover, .search-results button:hover {
+    background-color: #218838;
+}
+.scroll-container button:active, .search-results button:active {
+    transform: scale(0.95); /* Анимация нажатия */
+}
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    background-color: #3e3a36; /* Темный фон панели */
+    padding: 10px 0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.5); /* Тень */
+    z-index: 1000; /* Закрепление панели поверх других элементов */
+}
+.bottom-nav button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #f0f0f0; /* Светлый текст */
+    outline: none; /* Убрать синее выделение */
+}
+.bottom-nav button:hover {
+    color: #28a745;
+}
+.section {
+    display: none;
+    width: 100%;
+    max-width: 600px;
+    margin: 20px 0;
+    text-align: center; /* Центрирование текста */
+}
+#search-input {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    background-color: #3e3a36; /* Темный фон поля ввода */
+    color: #f0f0f0; /* Светлый текст */
+}
+#search-input:focus {
+    border-color: #28a745;
+}
