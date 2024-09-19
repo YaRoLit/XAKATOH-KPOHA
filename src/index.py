@@ -8,11 +8,13 @@ import json
 import random
 import string
 from user import User
-import processes
+from processes import *
+import handler
 
 
 # Инициализация бота
 tgbot = tgbot.TeleBot(settings.TELEGRAM_TOKEN)
+settings.tgbot = tgbot
 
 
 # Словарь для хранения данных пользователей
@@ -70,36 +72,6 @@ def main_menu(call):
 
 
 # ______________________________________
-
-@tgbot.callback_query_handler(func=lambda call: True)
-def callback_query(call):
-    #try:
-    if call.data.split(" ", 1)[0] == "tag_to_user_add":
-        username = call.from_user.username
-        users[username].tags.append(call.data.split(" ")[1]) #ЗАПРОС К БД
-        tag_select(call)
-    
-    elif call.data.split(" ", 1)[0] == "tag_to_user_remove":
-        username = call.from_user.username
-        users[username].tags.remove(call.data.split(" ")[1]) #ЗАПРОС К БД
-        tag_select(call)
-    
-    elif call.data.split(" ", 1)[0] == "to_main_menu":
-        main_menu(call)
-
-    elif call.data == "create_event":
-        tgbot.register_next_step_handler(msg, create_event, tgbot, call)
-
-    else:
-        tgbot.answer_callback_query(callback_query_id=call.id, text="Для авторизации напишите /start", show_alert=True)
-
-
-    #except Exception as e:
-    #    tgbot.answer_callback_query(callback_query_id=call.id, text="Для авторизации напишите /start", show_alert=True)
-    #    print(e)
-
-def process_create_event(call):
-    #Процесс создания
 
 
 if __name__ == "__main__":
