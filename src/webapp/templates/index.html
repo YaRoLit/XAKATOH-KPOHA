@@ -16,6 +16,8 @@
 
     </script>
     <script>
+        window.Telegram.WebApp.ready();
+        
         function sendRequest(key) {
             fetch(`/button-click/${key}`, {
                 method: 'POST',
@@ -87,6 +89,22 @@
             // Show the default section
             showSection('profile');
         });
+
+        const user = {
+            user_id: window.Telegram.WebApp.initDataUnsafe.user.id,
+            username: window.Telegram.WebApp.initDataUnsafe.user.username
+        };
+
+        fetch('https://your-flask-server-url.com/webapp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
     </script>
 </head>
 <body>
