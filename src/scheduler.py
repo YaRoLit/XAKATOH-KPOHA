@@ -34,7 +34,11 @@ class Scheduler:
         self.df.to_sql(self.bd_filename, conn, if_exists='replace', index=False)
         conn.close()
     
-
     def check_datetime(self, date_start: datetime.datetime, long: int) -> pd.DataFrame:
         return self.df[(self.df.datetime >= date_start) &
                        (self.df.datetime <= (date_start + datetime.timedelta(minutes=long)))]
+
+    def check_event(self, place: str, date_start: datetime.datetime, long: int) -> pd.DataFrame:
+        return self.df[(self.df.datetime >= date_start) &
+                       (self.df.datetime <= (date_start + datetime.timedelta(minutes=long))) &
+                       (self.df.place == place)]
