@@ -54,6 +54,14 @@ def handle_voice(message):
     tr = Transcribator()
     print(tr.transcribe("cache/voice.wav"))
     
+    # TODO:
+    time = '12:00'
+    date = '21-12-2024'
+    place = 'Новосибирск'
+    length = '1:30'
+    
+    voice_approval_menu(tgbot, message, time, date, place, length)
+    
 
 if __name__ == "__main__":
 

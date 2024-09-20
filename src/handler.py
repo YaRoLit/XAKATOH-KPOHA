@@ -21,6 +21,10 @@ def handle_msg(tgbot, call):
         main_menu(tgbot, call)
     elif call.data == "create_event":
         create_event(tgbot, call)
+    elif call.data == "voice_approve":
+        voice_approve_button(tgbot, call.message)
+    elif call.data == "voice_undo":
+        voice_undo_button(tgbot, call.message)
     elif call.data.split(" ")[0] == "create_event_day":
         date = call.data.split(" ")[1]
     else:

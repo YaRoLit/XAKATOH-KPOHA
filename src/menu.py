@@ -41,3 +41,21 @@ def main_menu(tgbot, call):
             tgbot.send_video(chat_id=call.message.chat.id, video=gif, caption="Главное меню", reply_markup=markup)
         except:
             tgbot.send_video(chat_id=call.message.chat.id, video=gif, caption="Главное меню", reply_markup=markup)
+
+def voice_approval_menu(tgbot, message, time, date, place, length):
+    markup = types.InlineKeyboardMarkup(row_width=2)
+    markup.add(
+        types.InlineKeyboardButton("✅ Подтвердить", callback_data="voice_approve"),
+        types.InlineKeyboardButton("🚫 Отменить", callback_data="voice_undo"))
+    tgbot.send_message(chat_id=message.chat.id, 
+                       text=f'Вы хотите запланировать событие?\nМесто: {place}\nВремя: {time}\nДата: {date}\nДлительность: {length}',
+                       reply_markup=markup)
+    
+    
+def voice_approve_button(tgbot, message):
+    # TODO: вызвать планировщика
+    tgbot.delete_message(message.chat.id, message.message_id)
+    
+def voice_undo_button(tgbot, message):
+    tgbot.delete_message(message.chat.id, message.message_id)
+    
