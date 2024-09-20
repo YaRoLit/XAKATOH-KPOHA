@@ -7,7 +7,7 @@ import settings
 import json
 import random
 import string
-from transcribator import Transcribator
+from transcribator_new import Transcribator
 from user import User
 from processes import *
 from handler import handle_msg
@@ -52,13 +52,17 @@ def handle_voice(message):
     audio.export("cache/voice.wav", format="wav")
     
     tr = Transcribator()
-    print(tr.transcribe("cache/voice.wav"))
+    text = tr.transcribe("cache/voice.wav")
+    print(tr.events_type_recognize(text=text))
+    pl = tr.place_recognize(text=text)
+    print(tr.event_type_recognize(text=text))
+    long = tr.long_recognition(text=text)
+    datetime = str(tr.date_recognize(text=text)).split()
     
-    # TODO:
-    time = '12:00'
-    date = '21-12-2024'
-    place = 'Новосибирск'
-    length = '1:30'
+    time = datetime[1]
+    date = datetime[0]
+    place = pl
+    length = str(long)
     
     voice_approval_menu(tgbot, message, time, date, place, length)
     

@@ -2,7 +2,6 @@ import speech_recognition as sr
 from dateutil import parser
 import datetime
 from transformers import pipeline
-import subprocess
 
 
 class Transcribator:
@@ -11,9 +10,7 @@ class Transcribator:
         self.qa_model = pipeline("question-answering", "timpal0l/mdeberta-v3-base-squad2")
     
     def transcribe(self, audiofile) -> list:
-        subprocess.call(['rm', '-f', './audio/tmp.wav'])
-        subprocess.call(['ffmpeg', '-i', f'./audio/{audiofile}', './audio/tmp.wav'])
-        with sr.AudioFile('./audio/tmp.wav') as source:
+        with sr.AudioFile(audiofile) as source:
             audio = self.rec.record(source)
             try:
                 text = self.rec.recognize_google(audio, language="ru-RU")
