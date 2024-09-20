@@ -7,11 +7,12 @@ import settings
 import json
 import random
 import string
+from transcribator import Transcribator
 from user import User
 from processes import *
 from handler import handle_msg
 from menu import *
-
+from pydub import AudioSegment
 
 # Инициализация бота
 tgbot = tgbot.TeleBot(settings.TELEGRAM_TOKEN)
@@ -37,6 +38,22 @@ def start(message):
 @tgbot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     handle_msg(tgbot, call)
+
+@tgbot.message_handler(content_types=['voice'])
+def handle_voice(message):
+    file_info = tgbot.get_file(message.voice.file_id)
+    file = tgbot.download_file(file_info.file_path)
+    
+    with open("cache/voice.ogg", 'wb') as f:
+        f.write(file)
+    
+    # Конвертируем OGG в WAV
+    audio = AudioSegment.from_ogg("cache/voice.ogg")
+    audio.export("cache/voice.wav", format="wav")
+    
+    tr = Transcribator()
+    print(tr.transcribe("cache/voice.wav"))
+    
 
 if __name__ == "__main__":
 

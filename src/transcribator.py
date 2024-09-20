@@ -35,14 +35,19 @@ class Transcribator:
         self.rec = sr.Recognizer()
     
     def transcribe(self, audiofile) -> list:
-        subprocess.call(['ffmpeg', '-i', f'./audio/{audiofile}', './audio/tmp.wav'])
-        with sr.AudioFile('./audio/tmp.wav') as source:
+        with sr.AudioFile(audiofile) as source:
             audio = self.rec.record(source)
-            try:
-                text = self.rec.recognize_google(audio, language="ru-RU")
-                return text.split()
-            except Exception:
-                return ['Error']
+            
+        try:
+            text = self.rec.recognize_google(audio, language="ru-RU")
+            return text.split()
+        
+        except sr.UnknownValueError:
+            print("Error: could not understand audio")
+            return ['Error']
+        except sr.RequestError as e:
+            print("Error; {0}".format(e))
+            return ['Error']
     
     def events_type_recognize(self, text: list) -> dict:
         event = {}
