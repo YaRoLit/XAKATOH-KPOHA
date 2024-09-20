@@ -25,6 +25,9 @@ class Users:
     
     def find_by_tag(self, tag) -> pd.DataFrame:
         return self.df[self.df['tags'].str.contains(tag)]
+    
+    def show_user_tags(self, user_id) -> str:
+        return self.df[self.df['user_id'] == user_id].tags
 
     def bd_save(self) -> None:
         conn = sq.connect('{}.sqlite'.format(self.bd_filename))
