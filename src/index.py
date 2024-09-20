@@ -13,6 +13,9 @@ from processes import *
 from handler import handle_msg
 from menu import *
 from pydub import AudioSegment
+import torch
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Инициализация бота
 tgbot = tgbot.TeleBot(settings.TELEGRAM_TOKEN)
