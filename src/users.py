@@ -27,7 +27,15 @@ class Users:
         return self.df[self.df['tags'].str.contains(tag)]
     
     def show_user_tags(self, user_id) -> str:
-        return self.df[self.df['user_id'] == user_id].tags
+        return self.df[self.df['user_id'] == user_id].tags.to_string().split()[-1]
+    
+    def add_tag(self, user_id, tag) -> None:
+        tags = self.show_user_tags(user_id=user_id)
+        self.df.loc[self.df.user_id == user_id, 'tags'] = tags + tag
+
+    def rm_tag(self, user_id, tag) -> None:
+        tags = self.show_user_tags(user_id=user_id)
+        self.df.loc[self.df.user_id == user_id, 'tags'] = tags.replace(tag, '')
 
     def bd_save(self) -> None:
         conn = sq.connect('{}.sqlite'.format(self.bd_filename))
