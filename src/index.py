@@ -4,7 +4,7 @@ from telebot.apihelper import ApiTelegramException
 import threading
 import time
 from nlp_requests import nlp_request
-from response import render_eventlist
+from response import render_eventlist, valueError_message
 import settings
 import json
 import random
@@ -66,12 +66,6 @@ def start(message):
         main_menu(tgbot, message)
     tgbot.delete_message(message.chat.id, message.message_id)
 
-@tgbot.message_handler(commands=['admin'])
-def admMenu(message):
-    markup = markup_create()
-    settings.tap = 0
-    tgbot.reply_to(message, f"MAIN_MENU \n{settings.data[0]['datetime']}", reply_markup=markup)
-
 @tgbot.message_handler(commands=['id'])
 def id(message):
     #settings.tap = 0
@@ -85,6 +79,7 @@ def callback_query(call):
 #@tgbot.message_handler(content_types=['text'])
 #def handle_text(message):
 #    nlp_request(tgbot, message, message.text)
+
 
 @tgbot.message_handler(content_types=['voice'])
 def handle_voice(message):
@@ -101,9 +96,8 @@ def handle_voice(message):
     tr = Transcribator()
     text = tr.transcribe("cache/voice.wav")
     print("transcribed: " + text)
-    
-    df = nlp_request(tgbot, message, text)
-    tgbot.send_message(chat_id=message.chat.id, text=render_eventlist(df))
+
+    nlp_request(tgbot, message, text)
     
 
 if __name__ == "__main__":

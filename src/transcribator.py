@@ -22,6 +22,7 @@ class Transcribator:
 
     def request_preprocessing(self, text: str) -> list:
         '''Обработка и формализация пользовательского запроса'''
+        text = text.lower()
         try:
             date = self.parse_date(text=text)
         except:
@@ -75,7 +76,6 @@ class Transcribator:
     def parse_duration(self, text: str) -> int:
         '''Поиск указания длительности встречи в запросе и парсинг в минуты'''
         duration = self.qa_model(question="Какова длительность события?", context=text)['answer'].strip()
-        print(duration)
         time = ''.join(c if c.isdigit() else ' ' for c in duration).split()
         if ("час" in duration) & ("мин" in duration) & (len(time) == 2):
             return int(time[0]) * 60 + int(time[1])
