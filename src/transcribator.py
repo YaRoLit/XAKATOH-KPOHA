@@ -74,14 +74,19 @@ class Transcribator:
 
     def parse_duration(self, text: str) -> int:
         '''Поиск указания длительности встречи в запросе и парсинг в минуты'''
-        long = self.qa_model(question="Какова длительность события?", context=text)['answer'].strip()
-        numbers = ''.join(c if c.isdigit() else ' ' for c in long).split()
-        if "час" in long:
-            return int(numbers[0]) * 60
-        elif "мин" in long:
-            return int(numbers[0])
+        duration = self.qa_model(question="Какова длительность события?", context=text)['answer'].strip()
+        print(duration)
+        time = ''.join(c if c.isdigit() else ' ' for c in duration).split()
+        if ("час" in duration) & ("мин" in duration) & (len(time) == 2):
+            return int(time[0]) * 60 + int(time[1])
+        elif ("час" in duration) & (len(time) == 1):
+            return int(time[0]) * 60
+        elif ("час" in duration) & (len(time) == 0):
+            return 60
+        elif ("мин" in duration) & (len(time) == 1):
+            return int(time[0])
         else:
-            return 30
+            return 0
 
 
     def parse_time(self, text: str) -> list:
@@ -91,6 +96,7 @@ class Transcribator:
         if len(time) == 1:
             time.append('00')
         return time
+
 
     def parse_date(self, text: str) -> list:
         '''Поиск именованной сущности дата в запросе'''
@@ -151,4 +157,3 @@ class Transcribator:
             return 12
         else:
             return datetime.datetime.now().month
-
