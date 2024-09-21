@@ -1,8 +1,6 @@
 import speech_recognition as sr
 from dateutil import parser
-import datetime
 from transformers import pipeline
-import subprocess
 
 
 class Transcribator:
@@ -25,9 +23,10 @@ class Transcribator:
     def request_preprocessing(self, text: str) -> list:
         '''Обработка и формализация пользовательского запроса'''
         try:
-            datetime = self.parse_date(text=text)
+            date = self.parse_date(text=text)
         except:
             return ['error']
+        time = self.parse_time(text=text)
         duraton = self.parse_duration(text=text)
         place = self.parse_place(text=text)
         e_type = self.parse_event_type(text=text)
@@ -35,15 +34,15 @@ class Transcribator:
         plane_sinonyms = ["забронир", "созд", "запланир", "организ", "сдел"]
         for sinonim in plane_sinonyms:
             if sinonim in event_type_answer:
-                return ['add', datetime, place, duraton, e_type]
+                return ['add', date, time, place, duraton, e_type]
         rm_sinonyms = ["удал", "убер", "убр", "отмен", "очист"]
         for sinonim in rm_sinonyms:
             if sinonim in event_type_answer:
-                return ['remove', datetime, place]
+                return ['remove', date, time, place]
         show_events_sinonyms = ["покаж", "посм", "вывед", "какие", "планы", "календар"]
         for sinonim in show_events_sinonyms:
             if sinonim in event_type_answer:
-                return ['search', datetime]
+                return ['search', date]
         return ['error']
 
 
@@ -85,22 +84,26 @@ class Transcribator:
             return 30
 
 
-    def parse_date(self, text: str) -> datetime.datetime:
-        '''Поиск именованных сущностей дата/время в запросе и их парсинг в datetime'''
+    def parse_time(self, text: str) -> list:
+        '''Поиск именованной сущности время в запросе'''
         time = self.qa_model(question="О каком времени идет речь?", context=text)['answer'].strip()
         time = ''.join(c if c.isdigit() else ' ' for c in time).split()
         if len(time) == 1:
             time.append('00')
+        return time
+
+    def parse_date(self, text: str) -> list:
+        '''Поиск именованной сущности дата в запросе'''
         date = self.qa_model(question="О какой дате идет речь?", context=text)['answer'].strip()
         today = datetime.datetime.now()
         if "сегодн" in date:
-            return parser.parse(f"{today.month} {today.day} {today.year} {time[0]}:{time[1]}")
+            return [today.month, today.day, today.year]
         elif "послезавтр" in date:
             today_plus = (today + datetime.timedelta(days=2))
-            return parser.parse(f"{today_plus.month} {today_plus.day} {today_plus.year} {time[0]}:{time[1]}")
+            return [today_plus.month, today_plus.day, today_plus.year]
         elif "завтр" in date:
             today_plus = (today + datetime.timedelta(days=1))
-            return parser.parse(f"{today_plus.month} {today_plus.day} {today_plus.year} {time[0]}:{time[1]}")    
+            return [today_plus.month, today_plus.day, today_plus.year]
         date = date.split()
         try:
             day = int(date[0])
@@ -117,7 +120,7 @@ class Transcribator:
                 pass
         else:
             year = today.year     
-        return parser.parse(f"{month} {day} {year} {time[0]}:{time[1]}")
+        return [month, day, year]
 
 
     def transform_month(self, month: str) -> int:
