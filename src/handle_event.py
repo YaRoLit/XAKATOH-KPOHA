@@ -5,6 +5,8 @@ import schedule
 import time
 from telebot import types
 
+from users import Users
+
 
 def adminNotify(tgbot, id, datetime, long, event_type, city, place, tags, event_name, description, creator, speakers, event_id):
     markup = types.InlineKeyboardMarkup(row_width=2)
@@ -82,3 +84,28 @@ def run_schedule():
         
 def send_msg(tgbot, call):
     tgbot.send_message(call.message.chat.id, 'Круто')
+    #temporaryStorage.createEvent.acceptEvent(id)
+    
+def notify_all(tgbot, speakers, datetime, long, event_type, city, place, tags, event_name, description, event_id):
+    users = Users()
+    
+    chat_ids = set()
+    tag_list = tags.split('#')[1:]
+    for tag in tag_list:
+        users_list = users.find_by_tag(tag).user_id.to_list()
+        chat_ids.update(users_list)
+    
+    for chat_id in chat_ids:
+        tgbot.send_message(chat_id, 
+f"""Новое событие: {event_type} \"{event_name}\".
+{datetime.strftime("%d/%m/%Y")} в {datetime.strftime("%H:%M")}
+
+{description}
+
+Спикеры: {speakers};
+Длительность: {long};
+Место: {city}, {place};
+Теги: {tags}.
+""")
+        
+        

@@ -1,7 +1,7 @@
 from scheduler import Scheduler
 from users import Users
 
-TELEGRAM_TOKEN = '7221735219:AAHacKjwFbTr8w95_qaHDR6xHtF85V6GoHw'
+TELEGRAM_TOKEN = '8025388311:AAFCIvpE-StyVApOa6bzP3PKYMrQBmpGn8U'
 tags = ["Игры", "Деньги"]
 users = Users()
 events = Scheduler()

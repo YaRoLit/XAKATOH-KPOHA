@@ -81,21 +81,23 @@ def callback_query(call):
 
 @tgbot.message_handler(content_types=['voice'])
 def handle_voice(message):
-    file_info = tgbot.get_file(message.voice.file_id)
-    file = tgbot.download_file(file_info.file_path)
+    handle_event.notify_all(tgbot, "speakers", datetime(year=2024, month=9, day=22, hour=12, minute=30, second=00, microsecond=00), 
+               60, "общий сбор", "Новосибирск", "Игровая", "#sex#drugs", "Название", "Описание.", 123123)
+    # file_info = tgbot.get_file(message.voice.file_id)
+    # file = tgbot.download_file(file_info.file_path)
     
-    with open("cache/voice.ogg", 'wb') as f:
-        f.write(file)
+    # with open("cache/voice.ogg", 'wb') as f:
+    #     f.write(file)
     
-    # Конвертируем OGG в WAV
-    audio = AudioSegment.from_ogg("cache/voice.ogg")
-    audio.export("cache/voice.wav", format="wav")
+    # # Конвертируем OGG в WAV
+    # audio = AudioSegment.from_ogg("cache/voice.ogg")
+    # audio.export("cache/voice.wav", format="wav")
     
-    tr = Transcribator()
-    text = tr.transcribe("cache/voice.wav")
-    print("transcribed: " + text)
+    # tr = Transcribator()
+    # text = tr.transcribe("cache/voice.wav")
+    # print("transcribed: " + text)
 
-    nlp_request(tgbot, message, text)
+    # nlp_request(tgbot, message, text)
     
 def markup_Yes_No():
     markup = types.InlineKeyboardMarkup()
