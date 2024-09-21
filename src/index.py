@@ -169,7 +169,7 @@ def cmd():
                 if (tag not in tags):
                     tags.append(tag)
                 else:
-                    print("This Tag is already exists.")
+                    print("This Tag already exists.")
 
             elif (command.split(' ')[0] == 'tags_rm'):
                 tag = command.split(' ')[1]

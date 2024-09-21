@@ -1,6 +1,6 @@
 from time import strftime
 from menu import ai_approval_menu
-from response import render_eventlist, valueError_message
+from response import emptyCalendar_message, render_eventlist, valueError_message
 from transcribator import Transcribator
 from scheduler import Scheduler
 
@@ -21,7 +21,7 @@ def search_action(tgbot, message, args):
     joint_text = '\n'.join(text)
     
     if(not joint_text):
-        tgbot.send_message(chat_id=message.chat.id, text=valueError_message())
+        tgbot.send_message(chat_id=message.chat.id, text=emptyCalendar_message(day, month, year))
     else:
         tgbot.send_message(chat_id=message.chat.id, text=joint_text)
     

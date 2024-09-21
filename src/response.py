@@ -15,5 +15,5 @@ def render_eventlist(df) -> list:
 def valueError_message():
     return "Я ничего не понял, попробуйте переформулировать!"
 
-def empty_calendar(dt):
-    return f"На {dt.strftime("%d.%m.%Y")} ничего не запланировано!"
+def emptyCalendar_message(day, month, year):
+    return f"На {day}:{month}:{year} ничего не запланировано!"
