@@ -6,7 +6,7 @@ from transformers import pipeline
 class Transcribator:
     def __init__(self) -> None:
         self.rec = sr.Recognizer()
-        self.qa_model = pipeline("question-answering", "timpal0l/mdeberta-v3-base-squad2")
+        self.qa_model = pipeline("question-answering", "timpal0l/mdeberta-v3-base-squad2", device="cuda")
     
 
     def transcribe(self, audiofile) -> list:
