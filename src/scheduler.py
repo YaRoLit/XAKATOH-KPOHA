@@ -4,7 +4,7 @@ import sqlite3 as sq
 
 
 class Scheduler:
-    def __init__(self, bd_filename='test') -> None:
+    def __init__(self, bd_filename='events') -> None:
         self.bd_filename = bd_filename
         conn = sq.connect('{}.sqlite'.format(self.bd_filename))
         self.df = pd.read_sql('select * from {}'.format(self.bd_filename), conn)
