@@ -12,6 +12,7 @@ class Transcribator:
     
 
     def transcribe(self, audiofile) -> list:
+        '''Транскрибация аудиофайла (перевод в текст)'''
         with sr.AudioFile(audiofile) as source:
             audio = self.rec.record(source)
             try:
