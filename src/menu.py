@@ -42,13 +42,17 @@ def main_menu(tgbot, call):
         except:
             tgbot.send_video(chat_id=call.message.chat.id, video=gif, caption="Главное меню", reply_markup=markup)
 
-def voice_approval_menu(tgbot, message, time, date, place, length):
+def ai_approval_menu(tgbot, message, action, time, date, place, length, event_type):
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(
-        types.InlineKeyboardButton("✅ Подтвердить", callback_data="voice_approve"),
-        types.InlineKeyboardButton("🚫 Отменить", callback_data="voice_undo"))
+        types.InlineKeyboardButton("🚫 Отменить", callback_data="voice_undo"),
+        types.InlineKeyboardButton("✅ Подтвердить", callback_data="voice_approve"))
+
+    if(action == 'add'): action_message = 'запланировать'
+    if(action == 'remove'): action_message = 'отменить'
+    
     tgbot.send_message(chat_id=message.chat.id, 
-                       text=f'Вы хотите запланировать событие?\nМесто: {place}\nВремя: {time}\nДата: {date}\nДлительность: {length}',
+                       text=f'Вы хотите {action_message} событие?\nМесто: {place}\nВремя: {time[0:5]}\nДата: {date}\nДлительность: {length} минут\nНазначение: {event_type}',
                        reply_markup=markup)
     
     

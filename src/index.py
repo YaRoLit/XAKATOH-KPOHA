@@ -3,19 +3,19 @@ from telebot import types
 from telebot.apihelper import ApiTelegramException
 import threading
 import time
+from nlp_requests import nlp_request
+from response import render_eventlist
 import settings
 import json
 import random
 import string
-from transcribator_new import Transcribator
+from transcribator import Transcribator
 from user import User
 from processes import *
 from handler import handle_msg
 from menu import *
 from pydub import AudioSegment
 import torch
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Инициализация бота
 tgbot = tgbot.TeleBot(settings.TELEGRAM_TOKEN)
@@ -42,6 +42,10 @@ def start(message):
 def callback_query(call):
     handle_msg(tgbot, call)
 
+@tgbot.message_handler(content_types=['text'])
+def handle_text(message):
+    nlp_request(tgbot, message, message.text)
+
 @tgbot.message_handler(content_types=['voice'])
 def handle_voice(message):
     file_info = tgbot.get_file(message.voice.file_id)
@@ -56,18 +60,10 @@ def handle_voice(message):
     
     tr = Transcribator()
     text = tr.transcribe("cache/voice.wav")
-    print(tr.events_type_recognize(text=text))
-    pl = tr.place_recognize(text=text)
-    print(tr.event_type_recognize(text=text))
-    long = tr.long_recognition(text=text)
-    datetime = str(tr.date_recognize(text=text)).split()
+    print("transcribed: " + text)
     
-    time = datetime[1]
-    date = datetime[0]
-    place = pl
-    length = str(long)
-    
-    voice_approval_menu(tgbot, message, time, date, place, length)
+    df = nlp_request(tgbot, message, text)
+    tgbot.send_message(chat_id=message.chat.id, text=render_eventlist(df))
     
 
 if __name__ == "__main__":

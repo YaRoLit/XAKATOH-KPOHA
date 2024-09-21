@@ -1,5 +1,5 @@
 # Настройки сервера
-TELEGRAM_TOKEN = '7221735219:AAHacKjwFbTr8w95_qaHDR6xHtF85V6GoHw'
+TELEGRAM_TOKEN = '8025388311:AAFCIvpE-StyVApOa6bzP3PKYMrQBmpGn8U'
 
 tags = {"Игры": 0, "Деньги": 0}
 

@@ -2,11 +2,11 @@ import pandas as pd
 import datetime
 import sqlite3 as sq
 
-
+# Модуль с базами данных
 class Scheduler:
     def __init__(self, bd_filename='events') -> None:
         self.bd_filename = bd_filename
-        conn = sq.connect('{}.sqlite'.format(self.bd_filename))
+        conn = sq.connect('{}.sqlite'.format("db/" + self.bd_filename))
         self.df = pd.read_sql('select * from {}'.format(self.bd_filename), conn)
         conn.close()
         self.df.datetime = pd.to_datetime(self.df.datetime)
