@@ -239,10 +239,10 @@ def handle_event_speakers(message, tgbot, temp):
     finalize_event(tgbot, message, temp)
 
 def finalize_event(tgbot, message, temp, custom_data=''):
+    event_data[message.chat.id] = {}
+    event = event_data[message.chat.id]
 
     if(custom_data != ''):
-        event_data[message.chat.id] = {}
-        event = event_data[message.chat.id]
         event['type'] = custom_data[message.chat.id]['event_type']
         event['date'] = custom_data[message.chat.id]['date']
         event['city'] = 'Запланирован'
@@ -255,9 +255,8 @@ def finalize_event(tgbot, message, temp, custom_data=''):
         event['speakers'] = str(message.from_user.username)
         event_datetime = datetime.strptime(f"{event['date']} {event['time']}", "%m.%d.%Y %H:%M")
     else:
-        event = event_data[message.chat.id]
         event_datetime = datetime.strptime(f"{event['date']} {event['time']}", "%Y-%m-%d %H:%M")
-        
+
     creator= message.chat.id
     speakers= event['speakers']
     _datetime=event_datetime

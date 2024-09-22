@@ -26,6 +26,7 @@ def adminNotify(tgbot, id, datetime, long, event_type, city, place, tags, event_
     settings.msgs[id]['creator'] = creator
 
 def adminDecline(tgbot, call, id, name):
+    id = int(id)
     admin_name = call.from_user.username
     if int(id) in settings.msgs:
         for msg in settings.msgs[id]['msgss']:

@@ -71,7 +71,7 @@ def handle_msg(tgbot, call):
     elif call.data.split(" ")[0] == "wait_event_decline":
         id = call.data.split(" ")[1]
         name = call.data.split(" ")[2]
-        handle_event.adminAccept(tgbot, call, id, name)
+        handle_event.adminDecline(tgbot, call, id, name)
 
 # Календарь
     elif call.data.split()[0] == "calendar":

@@ -58,15 +58,16 @@ def main_menu(tgbot, call):
 
 def ai_approval_menu(tgbot, message, action, time, date, place, length, event_type):
     try:
-        data[call.message.chat.id] = {}
-        data[call.message.chat.id]['type'] = event_type
-        data[call.message.chat.id]['date'] = date
-        data[call.message.chat.id]['city'] = 'Запланирован'
-        data[call.message.chat.id]['place'] = place
+        data[message.chat.id] = {}
+        data[message.chat.id]['event_type'] = event_type
+        data[message.chat.id]['date'] = date
+        data[message.chat.id]['city'] = 'Запланирован'
+        data[message.chat.id]['place'] = place
         data[message.chat.id]['time'] = time
-        data[call.message.chat.id]['tags'] = ['#авто-тег']
+        data[message.chat.id]['tags'] = ['#авто-тег']
         data[message.chat.id]['title'] = 'Авто-Название'
         data[message.chat.id]['description'] = 'Авто-описание'
+        data[message.chat.id]['long'] = str(length)
     except:
         pass
 
@@ -75,20 +76,18 @@ def ai_approval_menu(tgbot, message, action, time, date, place, length, event_ty
         types.InlineKeyboardButton("🚫 Отменить", callback_data="voice_undo"),
         types.InlineKeyboardButton("✅ Подтвердить", callback_data="voice_approve"))
 
-    if(action == 'add'): action_message = 'запланировать'
-    if(action == 'remove'): action_message = 'отменить'
-
     tgbot.send_message(chat_id=message.chat.id,
-                       text=f'Вы хотите {action_message} событие?\nМесто: {place}\nВремя: {time[0:5]}\nДата: {date}\nДлительность: {length} минут\nНазначение: {event_type}',
+                       text=f'Вы хотите запланировать событие?\nМесто: {place}\nВремя: {time[0:5]}\nДата: {date}\nДлительность: {length} минут\nНазначение: {event_type}',
                        reply_markup=markup)
 
 
 def voice_approve_button(tgbot, message):
     # TODO: вызвать планировщика
-    try:
-        create_event.finalize_event(tgbot, message, '', data)
-    except:
-        pass
+    # try:
+        
+    create_event.finalize_event(tgbot, message, '', data)
+    # except:
+    #     pass
     tgbot.delete_message(message.chat.id, message.message_id)
 
 def voice_undo_button(tgbot, message):
