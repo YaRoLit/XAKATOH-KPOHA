@@ -45,16 +45,12 @@ def update_settings():
     settings.tags = tags
     importlib.reload(settings)
 
-update_settings()
-
 @tgbot.message_handler(commands=['start'])
 def start(message):
     user_id = message.chat.id
     username = message.from_user.username
-    if f'{user_id}' not in users.show_users().user_id.to_list():
+    if str(user_id) not in users.show_users().user_id.to_list():
         users.add_user(user_id=user_id, tags='')
-        users.add_tag(user_id, "Игры")  # ЗАПРОС К БД
-        print(users.df)
         users.bd_save()
         print(users.show_users())   
 
