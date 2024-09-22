@@ -52,7 +52,7 @@ def main_menu(tgbot, call):
 
     #except Exception as e:
         #print(e)
-    gif_path = '../assets/krona.mp4'  # Замените на путь к вашему локальному файлу
+    gif_path = 'assets/krona.mp4'  # Замените на путь к вашему локальному файлу
     with open(gif_path, 'rb') as gif:
         try:
             tgbot.send_video(chat_id=call.message.chat.id, video=gif, caption=f"Добро пожаловать, {call.from_user.first_name}. \n\nГлавное меню:", reply_markup=markup)

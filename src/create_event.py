@@ -27,7 +27,6 @@ def update_settings():
     settings.events = events
     settings.users = users
     settings.tags = tags
-    importlib.reload(settings)
 
 
 

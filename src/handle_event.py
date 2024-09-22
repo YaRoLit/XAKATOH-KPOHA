@@ -1,5 +1,6 @@
 import settings
 import temporaryStorage
+import temporaryStorage
 from telebot import types
 
 
@@ -24,28 +25,29 @@ def adminNotify(tgbot, id, datetime, long, event_type, city, place, tags, event_
 
 def adminDecline(tgbot, call, id, name):
     admin_name = call.from_user.username
-    if id not in settings.msgs:
+    if int(id) not in settings.msgs:
             settings.msgs[id] = {}
             settings.msgs[id]['msgss'] = []
     for msg in settings.msgs[id]['msgss']:
         tgbot.edit_message_text(chat_id=msg.chat.id, message_id=msg.message_id, text=f"Заявка о проведении события #{name} отклонена @{admin_name} ❌")
-        settings.msgs[id].remove(msg)
         settings.msgs[id]['msgss'].remove(msg)
 
     tgbot.send_message(settings.msgs[id]['creator'], f"Заявка о проведении события #{name} отклонена. Администратор: @{admin_name} ❌")
-    createEvent.dismisEvent(id)
+    #temporaryStorage.createEvent.dismisEvent(id)
 
 def adminAccept(tgbot, call, id, name):
+    id = int(id)
     admin_name = call.from_user.first_name
 
-    if id not in settings.msgs:
+    if int(id) not in settings.msgs:
             settings.msgs[id] = {}
             settings.msgs[id]['msgss'] = []
     print(settings.msgs[id]['msgss'])
     for msg in settings.msgs[id]['msgss']:
         tgbot.edit_message_text(chat_id=msg.chat.id, message_id=msg.message_id, text=f"Заявка о проведении события #{name} принята @{admin_name} ✅")
-        settings.msgs[id].remove(msg)
-        settings.msgs[id]['msgss'].remove(msg)
+        
+    for i in range(len(settings.msgs[id]['msgss'])-1):
+        settings.msgs[id]['msgss'].remove(settings.msgs[id]['msgss'][i])
 
     tgbot.send_message(settings.msgs[id]['creator'], f"Заявка о проведении события #{name} одобрена. Администратор: @{admin_name} ✅")
-    createEvent.acceptEvent(id)
+    #temporaryStorage.createEvent.acceptEvent(id)

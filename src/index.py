@@ -11,8 +11,8 @@ import random
 import importlib
 import string
 from transcribator import Transcribator
-from user import User
-from processes import *
+from users import Users
+from create_event import *
 from handler import handle_msg
 from menu import *
 from pydub import AudioSegment
@@ -82,9 +82,9 @@ def id(message):
 def callback_query(call):
     handle_msg(tgbot, call)
 
-@tgbot.message_handler(content_types=['text'])
-def handle_text(message):
-    nlp_request(tgbot, message, message.text)
+#@tgbot.message_handler(content_types=['text'])
+#def handle_text(message):
+#    nlp_request(tgbot, message, message.text)
 
 @tgbot.message_handler(content_types=['voice'])
 def handle_voice(message):

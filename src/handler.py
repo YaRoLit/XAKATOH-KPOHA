@@ -25,7 +25,7 @@ def handle_msg(tgbot, call):
         tgbot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
         tag_select(tgbot, call)
     elif call.data == "create_event":
-        create_event(tgbot, call)
+        create_event.event_create_start(tgbot, call)
     elif call.data == "voice_approve":
         voice_approve_button(tgbot, call.message)
     elif call.data == "voice_undo":
@@ -59,19 +59,6 @@ def handle_msg(tgbot, call):
         id = call.data.split(" ")[1]
         name = call.data.split(" ")[2]
         handle_event.adminAccept(tgbot, call, id, name)
-    elif callback.data == 'acceptEvent':
-        if(temporaryStorage.createEvent.acceptEvent(callback.message, settings.tap, "test.sql")):
-            settings.data[settings.tap]['accept'] = 'True'
-            status_event(callback)
-            print("Accept!")
-    elif callback.data == 'dismissEvent':
-        settings.data[settings.tap]['accept'] = 'False'
-        status_event(callback)
-        print("Dismiss!")
-    elif callback.data == 'Yes':
-        temporaryStorage.createEvent.replaceEvent(callback.message, settings.tap, "test.sql")
-    elif callback.data == 'No':
-        bot.delete_message(callback.message.chat.id, callback.message.message_id)
     elif call.data == "empty":
         pass
     else:
