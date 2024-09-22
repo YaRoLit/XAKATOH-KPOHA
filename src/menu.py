@@ -24,7 +24,7 @@ def tag_select(tgbot, call, uid):
     #try:
     markup = types.InlineKeyboardMarkup(row_width=2)
     for tag in tags:
-        if tag in str(users.show_user_tags(str(uid))): #ЗАПРОС К БД
+        if tag in users.show_user_tags(str(uid)): #ЗАПРОС К БД
             markup.add(types.InlineKeyboardButton("✅ " + tag, callback_data=f"tag_to_user_remove {tag}"))
         else:
             markup.add(types.InlineKeyboardButton(tag, callback_data=f"tag_to_user_add {tag}"))

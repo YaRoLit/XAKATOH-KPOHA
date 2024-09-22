@@ -1,12 +1,12 @@
 from scheduler import Scheduler
 from users import Users
 
-TELEGRAM_TOKEN = '8025388311:AAFCIvpE-StyVApOa6bzP3PKYMrQBmpGn8U'
-tags = ["Игры", "Деньги"]
+TELEGRAM_TOKEN = '7221735219:AAHacKjwFbTr8w95_qaHDR6xHtF85V6GoHw'
+tags = ["#игры", "#рок-н-ролл", "#постряпушки"]
 users = Users()
 events = Scheduler()
-cities = {'Saratov': ['Musorka']}
-types = ['SexParty']
+cities = {'Москва': ['Холл']}
+types = ['Конференц-зал', 'Личная встреча']
 event_data = {}
 
 global msgs
