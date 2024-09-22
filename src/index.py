@@ -6,25 +6,20 @@ import time
 from nlp_requests import nlp_request
 from response import render_eventlist, valueError_message
 import settings
-import json
-import random
 import importlib
-import string
+import schedule
 from transcribator import Transcribator
 from users import Users
 from create_event import *
 from handler import handle_msg
 from menu import *
 from pydub import AudioSegment
-import torch
-import pickle
 from users import Users
 from create_event import *
 from handler import handle_msg
 from menu import *
 from scheduler import Scheduler
 import tasks_planner
-import handle_event
 
 # Инициализация бота
 tgbot = tgbot.TeleBot(settings.TELEGRAM_TOKEN)
@@ -56,13 +51,16 @@ update_settings()
 def start(message):
     user_id = message.chat.id
     username = message.from_user.username
-    if user_id not in users.show_users().user_id:
+    if f'{user_id}' not in users.show_users().user_id.to_list():
         users.add_user(user_id=user_id, tags='')
+        users.add_tag(user_id, "Игры")  # ЗАПРОС К БД
         users.bd_save()
+        print(users.show_users())   
 
         tgbot.send_message(message.chat.id, f"Добро пожаловать, {username}!")
-        tag_select(tgbot, message)
+        tag_select(tgbot, message, user_id)
     else:
+        print(users.show_users())   
         main_menu(tgbot, message)
     tgbot.delete_message(message.chat.id, message.message_id)
 
@@ -99,10 +97,6 @@ def handle_voice(message):
 
     nlp_request(tgbot, message, text)
     
-
-if __name__ == "__main__":
-
-    tgbot.polling(none_stop=True)
 def markup_Yes_No():
     markup = types.InlineKeyboardMarkup()
     buttonYes = types.InlineKeyboardButton('✅', callback_data='Yes')
@@ -112,7 +106,7 @@ def markup_Yes_No():
 
 def not_add_event(message):
     markup = markup_Yes_No()
-    bot.send_message(message.chat.id, "На это время уже запланированно мероприятие, отменить предыдущее и запланировать новое?", reply_markup=markup)
+    tgbot.send_message(message.chat.id, "На это время уже запланированно мероприятие, отменить предыдущее и запланировать новое?", reply_markup=markup)
 
 def cmd():
     while True:

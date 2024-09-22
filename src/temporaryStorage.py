@@ -1,4 +1,5 @@
 import tasks_planner
+import scheduler
 from telebot import types
 import settings
 import handler
@@ -62,13 +63,12 @@ class createEvent:
         return settings.lenEvent
 
     @staticmethod
-    def acceptEvent(message, idevent: int, DB: str):
+    def acceptEvent(idevent: int, DB: str):
         if settings.data != None:
             for i in settings.data:
                 if i['id'] == idevent:
-                    ret = tasks_planner.PlannerTask.add_task(message, i, DB)
+                    settings.events.add_event(i)
                     print("Yes_2")
-                    return ret
     @staticmethod
     def replaceEvent(message, idevent: int, DB: str):
         if settings.data != None:

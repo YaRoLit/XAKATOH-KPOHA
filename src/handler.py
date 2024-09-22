@@ -12,18 +12,21 @@ def handle_msg(tgbot, call):
 
     if call.data.split(" ", 1)[0] == "tag_to_user_add":
         username = call.from_user.username
-        users.add_tag(call.from_user.id, call.data.split(" ")[1])  # ЗАПРОС К БД
-        tag_select(tgbot, call)
+        print(str(call.message.chat.id), call.data.split(" ")[1])
+        users.add_tag(str(call.message.chat.id), call.data.split(" ")[1])  # ЗАПРОС К БД
+        users.bd_save()
+        tag_select(tgbot, call, call.message.chat.id)
     elif call.data.split(" ", 1)[0] == "tag_to_user_remove":
         username = call.from_user.username
-        users.rm_tag(call.from_user.id, call.data.split(" ")[1])  # ЗАПРОС К БД
-        tag_select(tgbot, call)
+        users.rm_tag(str(call.message.chat.id), call.data.split(" ")[1])  # ЗАПРОС К БД
+        users.bd_save()
+        tag_select(tgbot, call, call.message.chat.id)
     elif call.data.split(" ", 1)[0] == "to_main_menu":
         tgbot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
         main_menu(tgbot, call)
     elif call.data == "to_tag_menu":
         tgbot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
-        tag_select(tgbot, call)
+        tag_select(tgbot, call, call.message.chat.id)
     elif call.data == "create_event":
         create_event.event_create_start(tgbot, call)
     elif call.data == "voice_approve":
@@ -53,8 +56,9 @@ def handle_msg(tgbot, call):
         create_event.choose_title(tgbot, call)
     elif call.data.split(" ")[0] == "wait_event_accept":
         id = call.data.split(" ")[1]
+        time = call.data.split(" ")[3]
         name = call.data.split(" ")[2]
-        handle_event.adminAccept(tgbot, call, id, name)
+        handle_event.adminAccept(tgbot, call, id, name, time)
     elif call.data.split(" ")[0] == "wait_event_decline":
         id = call.data.split(" ")[1]
         name = call.data.split(" ")[2]

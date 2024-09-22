@@ -20,11 +20,11 @@ def update_settings():
     settings.tags = tags
     importlib.reload(settings)
 
-def tag_select(tgbot, call):
+def tag_select(tgbot, call, uid):
     #try:
     markup = types.InlineKeyboardMarkup(row_width=2)
     for tag in tags:
-        if tag in str(users.show_user_tags(call.from_user.id)): #ЗАПРОС К БД
+        if tag in str(users.show_user_tags(str(uid))): #ЗАПРОС К БД
             markup.add(types.InlineKeyboardButton("✅ " + tag, callback_data=f"tag_to_user_remove {tag}"))
         else:
             markup.add(types.InlineKeyboardButton(tag, callback_data=f"tag_to_user_add {tag}"))
@@ -36,8 +36,13 @@ def tag_select(tgbot, call):
         tgbot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"Что вас интересует?", reply_markup=markup)
     except Exception as e:
         print(e)
+        extra(tgbot, call, markup)
+    
+def extra(tgbot, call, markup):
+    try:
+        tgbot.send_message(call.message.chat.id, f"Что вас интересует?", reply_markup=markup)
+    except:
         tgbot.send_message(call.chat.id, f"Что вас интересует?", reply_markup=markup)
-        
 
 def main_menu(tgbot, call):
     #try:
@@ -58,7 +63,7 @@ def main_menu(tgbot, call):
             tgbot.send_video(chat_id=call.message.chat.id, video=gif, caption=f"Добро пожаловать, {call.from_user.first_name}. \n\nГлавное меню:", reply_markup=markup)
         except Exception as e:
             print(e)
-            tgbot.send_video(chat_id=call.message.chat.id, video=gif, caption=f"Добро пожаловать, {call.from_user.first_name}. \n\nГлавное меню:", reply_markup=markup)
+            tgbot.send_video(chat_id=call.chat.id, video=gif, caption=f"Добро пожаловать, {call.from_user.first_name}. \n\nГлавное меню:", reply_markup=markup)
 
 
 def ai_approval_menu(tgbot, message, action, time, date, place, length, event_type):

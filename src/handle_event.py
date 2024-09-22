@@ -1,12 +1,15 @@
 import settings
 import temporaryStorage
 import temporaryStorage
+import schedule
+import time
 from telebot import types
 
 
 def adminNotify(tgbot, id, datetime, long, event_type, city, place, tags, event_name, description, creator, speakers, event_id):
     markup = types.InlineKeyboardMarkup(row_width=2)
-    markup.add(types.InlineKeyboardButton("✅", callback_data=f"wait_event_accept {id} {event_id}"), types.InlineKeyboardButton("❌", callback_data=f"wait_event_decline {id} {event_id}"))
+    time = str(datetime).split()[1]
+    markup.add(types.InlineKeyboardButton("✅", callback_data=f"wait_event_accept {id} {event_id}"), types.InlineKeyboardButton("❌", callback_data=f"wait_event_decline {id} {event_id} {time}"))
     for admin in settings.admins:
         msg = tgbot.send_message(admin, (f"Заявка на событие #{event_id}:\n" +
                                         f"Название: {event_name}\n" +
@@ -33,9 +36,9 @@ def adminDecline(tgbot, call, id, name):
         settings.msgs[id]['msgss'].remove(msg)
 
     tgbot.send_message(settings.msgs[id]['creator'], f"Заявка о проведении события #{name} отклонена. Администратор: @{admin_name} ❌")
-    #temporaryStorage.createEvent.dismisEvent(id)
+    temporaryStorage.createEvent.dismisEvent(id)
 
-def adminAccept(tgbot, call, id, name):
+def adminAccept(tgbot, call, id, name, time):
     id = int(id)
     admin_name = call.from_user.first_name
 
@@ -50,4 +53,32 @@ def adminAccept(tgbot, call, id, name):
         settings.msgs[id]['msgss'].remove(settings.msgs[id]['msgss'][i])
 
     tgbot.send_message(settings.msgs[id]['creator'], f"Заявка о проведении события #{name} одобрена. Администратор: @{admin_name} ✅")
-    #temporaryStorage.createEvent.acceptEvent(id)
+    temporaryStorage.createEvent.acceptEvent(id)
+    schedule_event(tgbot, time, call)
+    #notify_all(speakers, datetime, long, event_type, city, place, tags, event_name, description, event_id)
+    
+    
+def schedule_event(tgbot, event, call):
+    #удаление события по тегу
+    schedule.clear(str(event))
+    # Переработка времени по сдвигу (delay)
+    timeWithDelay: str
+    checkMin = int(str(event).split(':')[1]) - settings.delay
+    checkHour = int(str(event).split(':')[0])
+    if checkMin < 10 and checkMin >=0:
+        timeWithDelay = f'{str(checkHour)}:0{str(checkMin)}'
+    elif checkMin < 0:
+        timeWithDelay = f'{str(checkHour - 1)}:{str(60 - settings.delay)}'
+    else:
+        timeWithDelay = f'{str(checkHour)}:{str(checkMin)}'
+
+    schedule.every().day.at(timeWithDelay).do(send_msg, tgbot, call).tag(str(event))
+
+#это запускаем в отдельный поток в ГЛАВНОЙ сцене!!!!
+def run_schedule():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+        
+def send_msg(tgbot, call):
+    tgbot.send_message(call.message.chat.id, 'Круто')

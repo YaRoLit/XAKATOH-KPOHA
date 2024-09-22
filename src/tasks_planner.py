@@ -5,6 +5,7 @@ import sqlite3
 import index
 import settings
 import scheduler
+import datetime
 
 jobs = {}
 events = settings.events
@@ -19,7 +20,7 @@ class PlannerTask:
             existing_event = DBevents.execute("SELECT * FROM users WHERE datetime = ?", (event['datetime'],)).fetchall()
             if existing_event:
                 print("Событие с таким временем уже существует")
-                tgbot.not_add_event(message)
+                #tgbot.not_add_event(message)
                 settings.ev = existing_event
                 return False
 
