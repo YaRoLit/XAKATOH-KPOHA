@@ -3,6 +3,7 @@ import scheduler
 from telebot import types
 import settings
 import handler
+import handle_event
 
 eventT = {
     'datetime': "2024-09-21 13:00:00",
@@ -18,8 +19,8 @@ eventT = {
     'admin': "-",
     'speakers': "5",
 }
- # {event: {creator:id, msgss: [msg, msg]}}
 
+# {event: {creator:id, msgss: [msg, msg]}}
 msgs = {}
 
 class createEvent:
@@ -63,21 +64,28 @@ class createEvent:
         return settings.lenEvent
 
     @staticmethod
-    def acceptEvent(idevent: int, DB: str):
-        if settings.data != None:
+    def acceptEvent(tgbot, idevent: int):
+        if settings.data is not None:
             for i in settings.data:
                 if i['id'] == idevent:
+                    try:
+                        i.pop('accept')
+                        i.pop('id')
+                    except:
+                        print('Oh shit')
+                        pass
                     settings.events.add_event(i)
                     print("Yes_2")
+                    handle_event.notify_users(tgbot, i)
+
     @staticmethod
     def replaceEvent(message, idevent: int, DB: str):
-        if settings.data != None:
+        if settings.data is not None:
             for i in settings.data:
                 if i['id'] == idevent:
                     ret = tasks_planner.PlannerTask.replace_task(message, i, DB)
                     print("Yes_5")
                     return ret
-
 
     @staticmethod
     def dismisEvent(idevent: int):
@@ -86,3 +94,10 @@ class createEvent:
             if i['id'] == idevent:
                 settings.data.pop(count)
             count += 1
+
+    @staticmethod
+    def getEvent(idevent: int):
+        for event in settings.data:
+            if event['id'] == idevent:
+                return event
+        return None

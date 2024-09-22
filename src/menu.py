@@ -1,24 +1,16 @@
 import settings
-import importlib
 from telebot import types
 from telebot.apihelper import ApiTelegramException
 from users import Users
+import this_calendar
+import create_event
 
 events = settings.events
 users = settings.users
 cities = settings.cities
 tags = settings.tags
 
-def update_settings():
-    global events
-    global users
-    global cities
-    global tags
-    settings.cities = cities
-    settings.events = events
-    settings.users = users
-    settings.tags = tags
-    importlib.reload(settings)
+data = {}
 
 def tag_select(tgbot, call, uid):
     #try:
@@ -35,9 +27,8 @@ def tag_select(tgbot, call, uid):
     try:
         tgbot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"Что вас интересует?", reply_markup=markup)
     except Exception as e:
-        print(e)
         extra(tgbot, call, markup)
-    
+
 def extra(tgbot, call, markup):
     try:
         tgbot.send_message(call.message.chat.id, f"Что вас интересует?", reply_markup=markup)
@@ -62,11 +53,23 @@ def main_menu(tgbot, call):
         try:
             tgbot.send_video(chat_id=call.message.chat.id, video=gif, caption=f"Добро пожаловать, {call.from_user.first_name}. \n\nГлавное меню:", reply_markup=markup)
         except Exception as e:
-            print(e)
             tgbot.send_video(chat_id=call.chat.id, video=gif, caption=f"Добро пожаловать, {call.from_user.first_name}. \n\nГлавное меню:", reply_markup=markup)
 
 
 def ai_approval_menu(tgbot, message, action, time, date, place, length, event_type):
+    try:
+        data[call.message.chat.id] = {}
+        data[call.message.chat.id]['type'] = event_type
+        data[call.message.chat.id]['date'] = date
+        data[call.message.chat.id]['city'] = 'Запланирован'
+        data[call.message.chat.id]['place'] = place
+        data[message.chat.id]['time'] = time
+        data[call.message.chat.id]['tags'] = ['#авто-тег']
+        data[message.chat.id]['title'] = 'Авто-Название'
+        data[message.chat.id]['description'] = 'Авто-описание'
+    except:
+        pass
+
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(
         types.InlineKeyboardButton("🚫 Отменить", callback_data="voice_undo"),
@@ -74,16 +77,19 @@ def ai_approval_menu(tgbot, message, action, time, date, place, length, event_ty
 
     if(action == 'add'): action_message = 'запланировать'
     if(action == 'remove'): action_message = 'отменить'
-    
-    tgbot.send_message(chat_id=message.chat.id, 
+
+    tgbot.send_message(chat_id=message.chat.id,
                        text=f'Вы хотите {action_message} событие?\nМесто: {place}\nВремя: {time[0:5]}\nДата: {date}\nДлительность: {length} минут\nНазначение: {event_type}',
                        reply_markup=markup)
-    
-    
+
+
 def voice_approve_button(tgbot, message):
     # TODO: вызвать планировщика
+    try:
+        create_event.finalize_event(tgbot, message, '', data)
+    except:
+        pass
     tgbot.delete_message(message.chat.id, message.message_id)
-    
+
 def voice_undo_button(tgbot, message):
     tgbot.delete_message(message.chat.id, message.message_id)
-    

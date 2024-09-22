@@ -20,12 +20,12 @@ class Scheduler:
     def show_month(self, year: int, month: int) -> pd.DataFrame:
         return self.df[(self.df.datetime >= datetime.datetime(year=year, month=month)) &
                        (self.df.datetime <= datetime.datetime(year=year, month=(month + 1)))]
-    
+
 
     def add_event(self, event: dict) -> None:
         self.df.loc[len(self.df)] = event
         self.df = self.df.sort_values(by=['datetime'], ascending=False)
-    
+
     def rm_event(self, datetime: datetime.datetime, place) -> None:
         self.df = self.df[~((self.df.datetime == datetime) & (self.df.place == place))]
 
@@ -33,7 +33,7 @@ class Scheduler:
         conn = sq.connect('{}.sqlite'.format(self.bd_filename))
         self.df.to_sql(self.bd_filename, conn, if_exists='replace', index=False)
         conn.close()
-    
+
     def check_datetime(self, date_start: datetime.datetime, long: int) -> pd.DataFrame:
         return self.df[(self.df.datetime >= date_start) &
                        (self.df.datetime <= (date_start + datetime.timedelta(minutes=long)))]

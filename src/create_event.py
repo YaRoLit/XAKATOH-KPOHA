@@ -7,6 +7,8 @@ import random
 import temporaryStorage
 import handler
 import handle_event
+import time
+import menu
 
 cities = settings.cities
 event_types = settings.types
@@ -48,9 +50,9 @@ def handle_event_type(tgbot, call):
 
 def choose_date(tgbot, message):
     markup = types.InlineKeyboardMarkup(row_width=7)
-    start_date = datetime.now()
-    start_date = start_date.replace(day=1)
-    week_day = (start_date.weekday() - 2)
+    now = datetime.now()
+    start_date = now.replace(day=1)
+    week_day = (start_date.weekday())
     days = []
 
     # Заполнение списка датами на 30 дней вперед
@@ -61,7 +63,11 @@ def choose_date(tgbot, message):
     buttons = []
     for day in days:
         _day = day.split('-')[2]
-        buttons.append(types.InlineKeyboardButton(_day, callback_data=f"event_date {day}"))
+        day_date = datetime.strptime(day, '%Y-%m-%d')
+        if(day_date.date() == now.date()):
+            buttons.append(types.InlineKeyboardButton("📌", callback_data=f"event_date {day}"))
+        else:
+            buttons.append(types.InlineKeyboardButton(_day, callback_data=f"event_date {day}"))
 
     buttons_empty = []
     for i in range(week_day):
@@ -75,7 +81,6 @@ def choose_date(tgbot, message):
     for i in range(0, len(days_of_week_buttons), 7):
         markup.add(*days_of_week_buttons[i:i+7])
 
-    # Если в buttons_empty меньше 7 кнопок, добавляем из buttons
     while len(buttons_empty) < 7:
         buttons_empty.append(buttons.pop(0))
 
@@ -86,7 +91,7 @@ def choose_date(tgbot, message):
     for i in range(0, len(buttons), 7):
         markup.add(*buttons[i:i+7])
 
-    tgbot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text="Выберите дату:", reply_markup=markup)
+    tgbot.edit_message_text(chat_id=message.chat.id, message_id=message.message_id, text="Выберите дату:ㅤㅤㅤㅤ", reply_markup=markup)
 
 def handle_event_date(tgbot, call):
     event_date = call.data.split()[1]
@@ -163,7 +168,7 @@ def handle_event_tags(tgbot, call, added='', removed=''):
 
         if 'tags' not in event_data[call.message.chat.id]:
             event_data[call.message.chat.id]['tags'] = []
-            
+
         selected_tags = event_data[call.message.chat.id]['tags']
 
         if (added != ''):
@@ -173,7 +178,7 @@ def handle_event_tags(tgbot, call, added='', removed=''):
     except:
         if 'tags' not in event_data[call.chat.id]:
             event_data[call.chat.id]['tags'] = []
-            
+
         selected_tags = event_data[call.chat.id]['tags']
 
         if (added != ''):
@@ -192,7 +197,7 @@ def handle_event_tags(tgbot, call, added='', removed=''):
     #except Exception as e:
         #print(e)
     try:
-        
+
         tgbot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"Добавьте теги:", reply_markup=markup)
     except:
         tgbot.send_message(call.chat.id, f"Добавьте теги:", reply_markup=markup)
@@ -233,9 +238,20 @@ def handle_event_speakers(message, tgbot, temp):
     event_data[message.chat.id]['speakers'] = speakers
     finalize_event(tgbot, message, temp)
 
-def finalize_event(tgbot, message, temp):
+def finalize_event(tgbot, message, temp, custom_data=''):
     event = event_data[message.chat.id]
     event_datetime = datetime.strptime(f"{event['date']} {event['time']}", "%Y-%m-%d %H:%M")
+
+    if(custom_data != ''):
+        event_data[call.message.chat.id] = {}
+        event_data[call.message.chat.id]['type'] = custom_data['event_type']
+        event_data[call.message.chat.id]['date'] = custom_data['date']
+        event_data[call.message.chat.id]['city'] = 'Запланирован'
+        event_data[call.message.chat.id]['place'] = custom_data['place']
+        event_data[message.chat.id]['time'] = custom_data['time']
+        event_data[call.message.chat.id]['tags'] = ['#авто-тег']
+        event_data[message.chat.id]['title'] = 'Авто-Название'
+        event_data[message.chat.id]['description'] = 'Авто-описание'
 
     creator= message.chat.id
     speakers= event['speakers']
@@ -271,11 +287,15 @@ def finalize_event(tgbot, message, temp):
                f"Город: {event['city']}\n" +
                f"Место: {event['place']}\n" +
                f"Время: {event['time']}\n" +
-               f"Длительность: {long} минут"
+               f"Длительность: {long} минут\n"
                f"Теги: {', '.join(event['tags'])}\n" +
                f"Название: {event['title']}\n" +
                f"Описание: {event['description']}")
 
     tgbot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    if temp != '':
+        tgbot.delete_message(chat_id=temp.chat.id, message_id=temp.message_id)
+    temp = tgbot.send_message(message.chat.id, f"Заявка #{event_id} отправлена на рассмотрение. \nДетали:\n{summary}")
+    time.sleep(3)
     tgbot.delete_message(chat_id=temp.chat.id, message_id=temp.message_id)
-    tgbot.send_message(message.chat.id, f"Событие отправлено на рассмотрение:\n{summary}")
+    menu.main_menu(tgbot, message)
