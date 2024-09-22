@@ -1,15 +1,30 @@
 import settings
+import importlib
 from telebot import types
 from telebot.apihelper import ApiTelegramException
+from users import Users
 
+events = settings.events
 users = settings.users
+cities = settings.cities
 tags = settings.tags
+
+def update_settings():
+    global events
+    global users
+    global cities
+    global tags
+    settings.cities = cities
+    settings.events = events
+    settings.users = users
+    settings.tags = tags
+    importlib.reload(settings)
 
 def tag_select(tgbot, call):
     #try:
     markup = types.InlineKeyboardMarkup(row_width=2)
-    for tag in tags.keys():
-        if tag in users[call.from_user.username].tags: #ЗАПРОС К БД
+    for tag in tags:
+        if tag in str(users.show_user_tags(call.from_user.id)): #ЗАПРОС К БД
             markup.add(types.InlineKeyboardButton("✅ " + tag, callback_data=f"tag_to_user_remove {tag}"))
         else:
             markup.add(types.InlineKeyboardButton(tag, callback_data=f"tag_to_user_add {tag}"))
@@ -18,29 +33,33 @@ def tag_select(tgbot, call):
     #except Exception as e:
         #print(e)
     try:
-        #tgbot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id)
-        main = tgbot.send_message(call.chat.id, f"Что вас интересует?", reply_markup=markup)
-    except:
-        main = tgbot.send_message(call.chat.id, f"Что вас интересует?", reply_markup=markup)
+        tgbot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=f"Что вас интересует?", reply_markup=markup)
+    except Exception as e:
+        print(e)
+        tgbot.send_message(call.chat.id, f"Что вас интересует?", reply_markup=markup)
+        
 
 def main_menu(tgbot, call):
     #try:
     markup = types.InlineKeyboardMarkup(row_width=2)
-    market = types.InlineKeyboardButton("🚀 Создать", callback_data="create_event")
-    wallet = types.InlineKeyboardButton("📅 Календарь", callback_data="calendar")
-    markup.add(market, wallet)
-                                                                                                                                                # Нереализованный функционал Веб-приложения
-                                                                                                                                                #web_app_info = types.WebAppInfo("https://localhost:5000")
-                                                                                                                                                #button = types.KeyboardButton(text="Веб-приложение", web_app=web_app_info)
-                                                                                                                                                #markup.add(button)
+    plan = types.InlineKeyboardButton("🚀 Запланировать", callback_data="create_event")
+    calendar = types.InlineKeyboardButton("📅 События", callback_data="calendar")
+    tags = types.InlineKeyboardButton("🏷 Мои интересы", callback_data="to_tag_menu")
+
+    markup.add(calendar)
+    markup.add(plan)
+    markup.add(tags)
+
     #except Exception as e:
         #print(e)
     gif_path = '../assets/krona.mp4'  # Замените на путь к вашему локальному файлу
     with open(gif_path, 'rb') as gif:
         try:
-            tgbot.send_video(chat_id=call.message.chat.id, video=gif, caption="Главное меню", reply_markup=markup)
-        except:
-            tgbot.send_video(chat_id=call.message.chat.id, video=gif, caption="Главное меню", reply_markup=markup)
+            tgbot.send_video(chat_id=call.message.chat.id, video=gif, caption=f"Добро пожаловать, {call.from_user.first_name}. \n\nГлавное меню:", reply_markup=markup)
+        except Exception as e:
+            print(e)
+            tgbot.send_video(chat_id=call.message.chat.id, video=gif, caption=f"Добро пожаловать, {call.from_user.first_name}. \n\nГлавное меню:", reply_markup=markup)
+
 
 def ai_approval_menu(tgbot, message, action, time, date, place, length, event_type):
     markup = types.InlineKeyboardMarkup(row_width=2)

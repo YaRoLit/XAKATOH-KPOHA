@@ -1,7 +1,23 @@
-# Настройки сервера
-TELEGRAM_TOKEN = '8025388311:AAFCIvpE-StyVApOa6bzP3PKYMrQBmpGn8U'
+from scheduler import Scheduler
+from users import Users
 
-tags = {"Игры": 0, "Деньги": 0}
+TELEGRAM_TOKEN = '7221735219:AAHacKjwFbTr8w95_qaHDR6xHtF85V6GoHw'
+tags = ["Игры", "Деньги"]
+users = Users()
+events = Scheduler()
+cities = {'Saratov': ['Musorka']}
+types = ['SexParty']
+event_data = {}
 
-# Профили игроков
-users = {} # Поиск пользователей по именам
+global msgs
+global lenEvent
+global data
+global tap
+global ev
+msgs = {}
+ev = {}
+tap = 0
+lenEvent = 0
+data = []
+
+admins = ['1258192437', '480119475']

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-import index
+#import "../index"
 from player import Player
 
 app = Flask(__name__)
@@ -7,7 +7,7 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     username = "User"  # Замените на реальное имя пользователя
-    items = tags # Днамический список с ключами и значениями
+    items = {"SVO": "OSOS"} #tags # Днамический список с ключами и значениями
     return render_template('index.html', username=username, items=items)
 
 @app.route('/auth', methods=['POST'])
